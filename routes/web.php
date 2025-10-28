@@ -5,14 +5,25 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 Route::get('/', function () {
-    return response()->json([
-        'message' => 'EcoPuntos API - Backend Laravel',
-        'status' => 'online',
-        'version' => '1.0.0',
-        'database' => DB::connection()->getDatabaseName(),
-        'tables_count' => count(DB::select('SELECT table_name FROM information_schema.tables WHERE table_schema = \'public\''))
-    ]);
-});
+    try {
+        $tables = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'");
+        return response()->json([
+            'message' => 'EcoPuntos API - Backend Laravel',
+            'status' => 'online',
+            'version' => '1.0.0',
+            'database' => DB::connection()->getDatabaseName(),
+            'tables_count' => count($tables),
+            'tables' => array_map(fn($t) => $t->table_name, $tables)
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'EcoPuntos API - Backend Laravel',
+            'status' => 'online - sin migraciones',
+            'version' => '1.0.0',
+            'error' => $e->getMessage()
+        ]);
+    }
+})->withoutMiddleware([\Illuminate\Session\Middleware\StartSession::class]);
 
 // Ruta de diagnóstico
 Route::get('/diagnostico', function () {
@@ -35,7 +46,7 @@ Route::get('/diagnostico', function () {
             'trace' => config('app.debug') ? $e->getTraceAsString() : 'Debug disabled'
         ], 500);
     }
-});
+})->withoutMiddleware([\Illuminate\Session\Middleware\StartSession::class]);
 
 // ⚠️ RUTA TEMPORAL PARA SETUP - ELIMINAR DESPUÉS
 Route::get('/setup-admin-temp-987654321', function () {
@@ -48,7 +59,9 @@ Route::get('/setup-admin-temp-987654321', function () {
         // Paso 2: Ejecutar migraciones
         try {
             Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $output = Illuminate\Support\Facades\Artisan::output();
             $results['migrations'] = 'Ejecutadas exitosamente';
+            $results['migration_output'] = $output;
         } catch (\Exception $e) {
             $results['migrations_error'] = $e->getMessage();
         }
@@ -119,4 +132,4 @@ Route::get('/setup-admin-temp-987654321', function () {
             'line' => $e->getLine()
         ], 500);
     }
-});
+})->withoutMiddleware([\Illuminate\Session\Middleware\StartSession::class]);
