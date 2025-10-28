@@ -16,10 +16,10 @@ Route::get('/', function () {
 Route::get('/setup-admin-temp-987654321', function () {
     try {
         // Ejecutar migraciones primero
-        \Artisan::call('migrate', ['--force' => true]);
+        Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         
         // Ejecutar seeder de tipos de residuo
-        \Artisan::call('db:seed', [
+        Illuminate\Support\Facades\Artisan::call('db:seed', [
             '--class' => 'TiposResiduoSeeder',
             '--force' => true
         ]);
