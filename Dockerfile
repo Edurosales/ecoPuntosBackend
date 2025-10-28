@@ -14,8 +14,11 @@ RUN apt-get update && apt-get install -y \
 # Limpiar cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instalar extensiones de PHP
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+# Instalar dependencias para PostgreSQL
+RUN apt-get update && apt-get install -y libpq-dev
+
+# Instalar extensiones de PHP (incluye PostgreSQL y MySQL)
+RUN docker-php-ext-install pdo_pgsql pdo_mysql pgsql mbstring exif pcntl bcmath gd zip
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
