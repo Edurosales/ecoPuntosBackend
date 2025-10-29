@@ -73,7 +73,7 @@ Route::get('/setup-migrations-temp-123456', function () {
                     'rol' => 'admin',
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]);
+                ], 'id_usuario'); // Especificar el nombre de la columna de ID
                 
                 $results['admin_created'] = true;
                 $results['admin_id'] = $adminId;
