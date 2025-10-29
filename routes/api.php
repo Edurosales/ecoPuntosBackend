@@ -59,6 +59,23 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
+    // RUTA TEMPORAL PARA ARREGLAR ROL DE ADMIN
+    Route::post('/fix-admin-role-temp-999', function (Request $request) {
+        $adminUser = \App\Models\User::where('email', 'admin@ecopuntos.com')->first();
+        
+        if (!$adminUser) {
+            return response()->json(['error' => 'Usuario admin no encontrado'], 404);
+        }
+        
+        $adminUser->rol = 'admin';
+        $adminUser->save();
+        
+        return response()->json([
+            'message' => 'Rol actualizado exitosamente',
+            'user' => $adminUser,
+        ]);
+    });
+
     // Cerrar sesión
     Route::post('logout', [AuthController::class, 'logout']);
 
