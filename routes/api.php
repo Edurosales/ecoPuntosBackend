@@ -48,6 +48,17 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+    // RUTA DE DIAGNÓSTICO TEMPORAL
+    Route::get('/debug-user', function (Request $request) {
+        $user = $request->user();
+        return response()->json([
+            'authenticated' => !!$user,
+            'user' => $user,
+            'rol' => $user->rol ?? null,
+            'is_admin' => $user && $user->rol === 'admin',
+        ]);
+    });
+
     // Cerrar sesión
     Route::post('logout', [AuthController::class, 'logout']);
 
