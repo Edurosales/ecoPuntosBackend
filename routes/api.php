@@ -65,12 +65,12 @@ Route::get('/setup-migrations-temp-123456', function () {
                 $adminId = DB::table('users')->insertGetId([
                     'nombre' => 'Admin',
                     'apellido' => 'System',
+                    'dni' => '00000000',
                     'email' => 'admin@ecopuntos.com',
                     'password' => Hash::make('admin123'),
+                    'puntos' => 0,
+                    'preferencia_tema' => 'light',
                     'rol' => 'admin',
-                    'direccion' => 'Sistema',
-                    'telefono' => '999999999',
-                    'puntos_acumulados' => 0,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
