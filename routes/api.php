@@ -22,16 +22,13 @@ Route::get('tipos-residuos', function () {
     return response()->json(\App\Models\TipoResiduo::where('activo', true)->orderBy('nombre')->get());
 });
 
-// Endpoint público: TODOS los puntos de acopio aprobados SIN relación (más simple)
+// Endpoint público: TODOS los puntos de acopio aprobados CON relación recolector
 Route::get('public/puntos-acopio', function () {
     $puntos = \App\Models\PuntoAcopio::where('estado', 'aprobado')
+        ->with('recolector:id_usuario,nombre,apellido')
+        ->select('id_acopio', 'nombre_lugar', 'direccion', 'departamento', 'provincia', 'distrito', 'ubicacion_gps', 'user_id_recolector', 'estado')
         ->orderBy('nombre_lugar')
         ->get();
-    
-    // Cargar recolector manualmente para evitar errores
-    foreach ($puntos as $punto) {
-        $punto->recolector = \App\Models\User::find($punto->user_id_recolector);
-    }
     
     return response()->json($puntos, 200);
 });
